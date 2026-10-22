@@ -1,23 +1,22 @@
-# Saad-# AI Study Assistant
+# AI Study Assistant
 
-A beginner-friendly chatbot for students, built with Python and Streamlit. Ask questions, paste notes,
-or upload files (PDF, DOCX, TXT, MD, CSV, PNG, JPG), then choose a mode: **Explain**, **Quiz me**,
-**Summarize** or **Flashcards**. Answers stream in live. It uses the Anthropic (Claude) API.
+A beginner-friendly study chatbot built with Python and Streamlit, using the Anthropic (Claude) API.
+Ask questions, paste notes, or upload files (PDF, DOCX, TXT, MD, CSV, PNG, JPG), then pick a mode:
+Explain, Quiz me, Summarize or Flashcards. Answers stream in live.
 
-## Files
+## Files (all in ONE folder)
 | File | Purpose |
 |---|---|
-| `app.py` | The Streamlit interface |
-| `ai_client.py` | API key loading, prompts, API calls, error messages |
-| `file_utils.py` | File validation and text extraction |
-| `requirements.txt` | Python dependencies |
+| `app.py` | The whole app (settings, file reading, AI calls, interface) |
+| `requirements.txt` | Python dependencies. Must sit next to `app.py` |
 | `.env.example` | Template for your key (copy to `.env`) |
 | `.streamlit/secrets.toml.example` | Template for Streamlit secrets |
+| `.gitignore` | Keeps `.env` and secrets out of Git |
 
 ## 1. Get an API key
 1. Create an account at https://console.anthropic.com.
-2. Add billing or credits (the API is pay-as-you-go).
-3. Open **API Keys** → **Create Key**, and copy it. You see it only once.
+2. Add credits or billing (pay-as-you-go).
+3. Open **API Keys** > **Create Key** and copy it. It is shown only once.
 
 ## 2. Install
 Requires Python 3.9+.
@@ -32,8 +31,8 @@ pip install -r requirements.txt
 ```bash
 cp .env.example .env            # Windows: copy .env.example .env
 ```
-Open `.env` and replace `your-api-key-here` with your key. `.env` is in `.gitignore`, so it won't be uploaded to GitHub.
-Alternatively, copy `.streamlit/secrets.toml.example` to `.streamlit/secrets.toml` and fill it in.
+Open `.env` and replace `your-api-key-here` with your key. No spaces or quotes.
+Alternative: copy `.streamlit/secrets.toml.example` to `.streamlit/secrets.toml` and fill it in.
 
 ## 4. Run
 ```bash
@@ -41,27 +40,31 @@ streamlit run app.py
 ```
 Open http://localhost:8501.
 
-## 5. Deploy (Streamlit Community Cloud, free)
-1. Push this folder to a GitHub repository (confirm `.env` is NOT included).
-2. Go to https://share.streamlit.io → **New app**, select the repo and `app.py`.
-3. Open **Advanced settings → Secrets** and paste:
+## 5. Deploy on Streamlit Community Cloud (free)
+1. Upload the **contents** of this folder to the **root** of a GitHub repo, so `app.py` and
+   `requirements.txt` are side by side. Do NOT upload `.env`.
+2. Go to https://share.streamlit.io > **New app**, choose the repo, branch and `app.py`.
+3. Open **Advanced settings > Secrets** and paste:
    ```toml
    ANTHROPIC_API_KEY = "your-real-key"
    ```
-4. Click **Deploy**. Other hosts (Render, Railway, Hugging Face Spaces) work too: set `ANTHROPIC_API_KEY`
-   as an environment variable and use the start command
-   `streamlit run app.py --server.port $PORT --server.address 0.0.0.0`.
+4. Click **Deploy**. After changing files or secrets, use **Manage app > Reboot**.
+
+Other hosts (Render, Railway, Hugging Face Spaces): set `ANTHROPIC_API_KEY` as an environment variable and run
+`streamlit run app.py --server.port $PORT --server.address 0.0.0.0`.
 
 ## Limitations
-- **Not a source of truth.** AI can be wrong; check important facts against your textbook.
-- **Limits:** 3 files, 5 MB each; about 40,000 characters of file text are used; messages max 4,000 characters; the last 20 messages are remembered.
-- **Scanned PDFs** have no text and are rejected. Upload a clear photo (PNG/JPG) of the page instead.
-- **Images** apply only to the next question you send (they are not remembered afterwards).
-- **No login and no saved history:** the chat disappears when you refresh. Use **Download chat** to keep it.
-- **Cost:** every message uses your API credits. The app has no per-user usage cap, so don't share a public deployment widely without adding one.
-- **Model:** defaults to `claude-sonnet-5-5`; change it with `ANTHROPIC_MODEL` if your account uses another.
+- AI can be wrong. Check important facts against your textbook.
+- Limits: 3 files of 5 MB each, about 40,000 characters of file text, messages up to 4,000 characters, last 20 messages remembered.
+- Scanned PDFs have no text and are rejected. Upload a clear photo (PNG/JPG) instead.
+- Images apply only to the next question you send.
+- No login or saved history: refreshing clears the chat. Use **Download chat** to keep it.
+- Every message uses your API credits and there is no per-user cap, so don't share a public deployment widely.
+- Default model is `claude-sonnet-5-5`. Set `ANTHROPIC_MODEL` if your account uses another.
 
 ## Troubleshooting
-- *"No API key found"* → check `.env` is in the same folder as `app.py`, then restart.
-- *"API key was rejected"* → recreate the key and make sure there are no spaces or quotes around it in `.env`.
-- *"Model not found"* → set `ANTHROPIC_MODEL` to a model listed in your Anthropic console.
+- **ModuleNotFoundError**: a file or package is missing. Check that `app.py` and `requirements.txt` are in the same folder
+  (the repo root on Streamlit Cloud), then reboot.
+- **No API key found**: check `.env` (or Secrets) and restart.
+- **API key was rejected**: create a new key and paste it again.
+- **Model not found**: set `ANTHROPIC_MODEL` to a model listed in your Anthropic console.
